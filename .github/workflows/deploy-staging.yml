@@ -1,9 +1,9 @@
 name: Deploy to Staging
 
 on:
-  push:
-    branches:
-      - master
+  # push:
+  #   branches:
+  #     - master
 
   workflow_dispatch:
 
@@ -11,10 +11,9 @@ jobs:
   deploy:
     # Do not deploy in the main repository, only in user projects
     if: github.repository_owner != 'fastapi'
-    runs-on: ubuntu-latest
-
-      # - self-hosted
-      # - staging
+    runs-on:
+      - self-hosted
+      - staging
     env:
       ENVIRONMENT: Staging
       DOMAIN: ${{ secrets.DOMAIN_STAGING }}
@@ -31,10 +30,5 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
-          docker-compose -f docker-compose.yml --project-name ${{ secrets.STACK_NAME_STAGING }} build
-      # - run: docker-compose -f docker-compose.yml --project-name ${{ secrets.STACK_NAME_STAGING }} up -d
+      - run: docker-compose -f docker-compose.yml --project-name ${{ secrets.STACK_NAME_STAGING }} build
+      - run: docker-compose -f docker-compose.yml --project-name ${{ secrets.STACK_NAME_STAGING }} up -d
